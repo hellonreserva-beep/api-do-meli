@@ -23,23 +23,32 @@
     const API_URL = "https://api-do-meli-1.onrender.com";
 
     async function buscar() {
-      const query = document.getElementById("query").value;
-      const limit = document.getElementById("limit").value;
-      const div = document.getElementById("resultado");
-      div.innerHTML = "Buscando...";
+    const query = document.getElementById("query").value;
+    const limit = document.getElementById("limit").value;
+    const div = document.getElementById("resultado");
+    div.innerHTML = "Buscando...";
 
-      const resposta = await fetch(`${API_URL}/search?query=${query}&limit=${limit}`);
-      const dados = await resposta.json();
+    try {
+        const resposta = await fetch(`${API_URL}/search?query=${query}&limit=${limit}`);
+        const dados = await resposta.json();
 
-      div.innerHTML = dados.items.map(item => `
-        <div class="item">
-          <img src="${item.url_imagem}" alt="${item.titulo}">
-          <strong>${item.titulo}</strong><br>
-          R$ ${item.preco?.toFixed(2)}<br>
-          Reviews: ${item.reviews.length > 0 ? item.reviews.length + " avaliações" : "sem reviews"}
-        </div>
-      `).join("");
+        if (!dados.items) {
+            div.innerHTML = `<p>Erro: ${dados.detail || "resposta inesperada da API"}</p>`;
+            return;
+        }
+
+        div.innerHTML = dados.items.map(item => `
+            <div class="item">
+                <img src="${item.url_imagem}" alt="${item.titulo}">
+                <strong>${item.titulo}</strong><br>
+                R$ ${item.preco?.toFixed(2)}<br>
+                Reviews: ${item.reviews.length > 0 ? item.reviews.length + " avaliações" : "sem reviews"}
+            </div>
+        `).join("");
+    } catch (erro) {
+        div.innerHTML = `<p>Erro ao conectar na API: ${erro.message}</p>`;
     }
+}
   </script>
 </body>
 </html>
