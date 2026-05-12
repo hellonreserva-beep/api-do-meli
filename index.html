@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Busca Mercado Livre</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    input, button { padding: 8px 12px; font-size: 16px; }
+    #resultado { margin-top: 24px; }
+    .item { border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; border-radius: 8px; }
+    img { width: 80px; vertical-align: middle; margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Busca Mercado Livre</h1>
+  <input type="text" id="query" placeholder="Ex: iphone">
+  <input type="number" id="limit" value="5" min="1" max="20" style="width:60px">
+  <button onclick="buscar()">Buscar</button>
+  <div id="resultado"></div>
+
+  <script>
+    // TROQUE pela sua URL do Render quando publicar
+    const API_URL = "https://api-do-meli-1.onrender.com";
+
+    async function buscar() {
+      const query = document.getElementById("query").value;
+      const limit = document.getElementById("limit").value;
+      const div = document.getElementById("resultado");
+      div.innerHTML = "Buscando...";
+
+      const resposta = await fetch(`${API_URL}/search?query=${query}&limit=${limit}`);
+      const dados = await resposta.json();
+
+      div.innerHTML = dados.items.map(item => `
+        <div class="item">
+          <img src="${item.url_imagem}" alt="${item.titulo}">
+          <strong>${item.titulo}</strong><br>
+          R$ ${item.preco?.toFixed(2)}<br>
+          Reviews: ${item.reviews.length > 0 ? item.reviews.length + " avaliações" : "sem reviews"}
+        </div>
+      `).join("");
+    }
+  </script>
+</body>
+</html>
